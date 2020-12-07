@@ -85,4 +85,8 @@ public class XMLFacade {
         }
         return products;
     }
+
+    public List<Product> findProducts(String keyword, int categoryId) {
+        return productService.findProducts(keyword, categoryId);
+    }
 }

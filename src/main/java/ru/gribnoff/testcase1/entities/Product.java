@@ -18,6 +18,7 @@ public class Product {
     @Id
     private Long id;
     @ManyToOne
+//    @Field(type = FieldType.Nested)
     private Category category;
 //    private int categoryId;
     private String name;

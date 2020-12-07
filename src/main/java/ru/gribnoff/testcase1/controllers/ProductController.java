@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.gribnoff.testcase1.entities.Product;
 import ru.gribnoff.testcase1.services.XMLFacade;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/rest")
@@ -32,5 +34,10 @@ public class ProductController {
     @GetMapping("/product/{id}")
     public Product findOne(@PathVariable("id") Long id) {
         return elasticsearchOperations.get(id.toString(), Product.class);
+    }
+
+    @GetMapping("/find")
+    public List<Product> find(@RequestParam String keyword, @RequestParam int categoryId) {
+        return xmlFacade.findProducts(keyword, categoryId);
     }
 }
