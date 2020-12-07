@@ -26,10 +26,10 @@ public class ProductController {
         return xmlFacade.parseXML(url);
     }
 
-//    @GetMapping("/index")
-//    public Iterable<Product> indexParsed(@RequestParam String url) {
-//        return elasticsearchOperations.save(parseXML(url));
-//    }
+    @GetMapping("deleteIndex")
+    public void deleteProductIndex() {
+        elasticsearchOperations.indexOps(Product.class).delete();
+    }
 
     @GetMapping("/product/{id}")
     public Product findOne(@PathVariable("id") Long id) {
