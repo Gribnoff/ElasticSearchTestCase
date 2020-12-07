@@ -16,6 +16,10 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public void save(Iterable<Product> products) {
+        products.forEach(productRepository::save);
+    }
+
     public void delete(Product product) {
         productRepository.delete(product);
     }
