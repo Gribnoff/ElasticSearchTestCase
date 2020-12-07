@@ -20,8 +20,8 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public Product findOne(Long id) {
-        return productRepository.findById(id);
+    public Product findById(Long id) {
+        return productRepository.findById(id).orElseThrow();
     }
 
     public Iterable<Product> findAll() {
