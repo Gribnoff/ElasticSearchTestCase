@@ -10,9 +10,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import ru.gribnoff.testcase1.entities.Category;
 import ru.gribnoff.testcase1.entities.Product;
+import ru.gribnoff.testcase1.entities.util.Products;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,26 +30,49 @@ public class XMLFacade {
     private final ProductService productService;
     private final CategoryService categoryService;
 
-    public List<Product> parseXML(String url) {
-        List<Product> products = new ArrayList<>();
+
+    public List<Product> parseXML(String givenURL) {
+        Products root = null;
 
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(url);
+//            Jaxb2Marshaller jaxb = new Jaxb2Marshaller();
+//            jaxb.setClassesToBeBound(XMLRootElement.class, Category.class, Product.class);
+            JAXBContext jaxb = JAXBContext.newInstance(Products.class);
+            Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+            URL url = new URL(givenURL);
 
-//            doc.getDocumentElement().normalize();
-
-            indexCategories(doc);
-
-            products = indexProducts(doc);
-
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            root = unmarshaller.unmarshal(XMLInputFactory.newInstance().createXMLStreamReader(url.openStream()), Products.class).getValue();
+            root.getProducts().forEach(product -> System.out.println(product.getId()));
+//            root.getCategories().forEach(cat -> System.out.println(cat.getId()));
+            System.out.println("sout here!");
+        } catch (JAXBException | IOException | XMLStreamException e) {
+            e.printStackTrace();
         }
 
-        return products;
+
+        return root.getProducts();
     }
+
+//    public List<Product> parseXML(String url) {
+//        List<Product> products = new ArrayList<>();
+//
+//        try {
+//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//            DocumentBuilder builder = factory.newDocumentBuilder();
+//            Document doc = builder.parse(url);
+//
+////            doc.getDocumentElement().normalize();
+//
+//            indexCategories(doc);
+//
+//            products = indexProducts(doc);
+//
+//        } catch (Exception ex) {
+//            logger.error(ex.getMessage());
+//        }
+//
+//        return products;
+//    }
 
     private void indexCategories(Document doc) {
         NodeList categoryNodeList = doc.getDocumentElement().getElementsByTagName("category");
@@ -68,7 +97,7 @@ public class XMLFacade {
         for (int i = 0; i < productNodeList.getLength(); i++) {
             Node node = productNodeList.item(i);
 
-            if(node.getNodeType() == Node.ELEMENT_NODE) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element elem = (Element) node;
                 Product product = new Product(
                         Long.parseLong(elem.getAttribute("id")),
